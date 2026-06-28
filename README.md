@@ -1,5 +1,7 @@
 # 09 — Threat Intelligence Automation (Daily Brief)
 
+[![CI](https://github.com/BL3IP/threat-intel-brief/actions/workflows/ci.yml/badge.svg)](https://github.com/BL3IP/threat-intel-brief/actions/workflows/ci.yml)
+
 Aggregates IOC feed data into an automated **daily threat brief** — volume by type/source, top
 malware families, and the newest indicators — the kind of summary a CTI analyst sends each morning.
 
