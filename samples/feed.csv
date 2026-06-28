@@ -1,0 +1,16 @@
+type,value,malware,first_seen,source
+url,http://45.83.122.10/panel/gate.php,Qakbot,2026-06-27,urlhaus
+url,http://malicious-cdn.test/load.exe,AgentTesla,2026-06-27,urlhaus
+url,http://203.0.113.9/beacon,CobaltStrike,2026-06-27,urlhaus
+url,http://lure.test/invoice.html,AgentTesla,2026-06-27,urlhaus
+domain,update-check.evil.test,Lumma,2026-06-26,otx
+domain,c2.evil-domain.test,CobaltStrike,2026-06-27,otx
+domain,login-secure.test,AgentTesla,2026-06-24,otx
+domain,track.lumma.test,Lumma,2026-06-26,otx
+ip,185.220.101.50,CobaltStrike,2026-06-27,feodo
+ip,193.42.33.10,Emotet,2026-06-25,feodo
+ip,45.83.122.10,Qakbot,2026-06-27,feodo
+ip,91.92.240.5,Lumma,2026-06-27,feodo
+sha256,275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f,AgentTesla,2026-06-27,malwarebazaar
+sha256,5d41402abc4b2a76b9719d911017c592a1b2c3d4e5f60718293a4b5c6d7e8f901,Emotet,2026-06-25,malwarebazaar
+md5,44d88612fea8a8f36de82e1278abb02f,Qakbot,2026-06-26,malwarebazaar
