@@ -11,7 +11,8 @@ shareable brief, ready to feed enrichment + detection pipelines.
 | Path | What it is |
 |------|-----------|
 | [`ti_brief.py`](./ti_brief.py) | Feed parser + brief generator (zero dependencies) |
-| [`samples/feed.csv`](./samples/feed.csv) | Sample IOC feed (type, value, malware, first_seen, source) |
+| [`samples/feed.csv`](./samples/feed.csv) | **Synthetic/fabricated** sample feed (`.test` domains, doc IP ranges — NOT real IOCs) for deterministic tests |
+| [`reports/daily-brief-LIVE.md`](./reports/daily-brief-LIVE.md) | A brief built from a **REAL live feed** (abuse.ch Feodo Tracker) |
 | [`reports/daily-brief.md`](./reports/daily-brief.md) | The generated brief (proof) |
 
 ## Exact Setup Commands
@@ -31,6 +32,19 @@ top [('AgentTesla', 4), ('Qakbot', 3), ('CobaltStrike', 3)]
 ```
 The brief ([`reports/daily-brief.md`](./reports/daily-brief.md)) ranks malware families and lists
 the newest indicators with source attribution.
+
+> The bundled `samples/feed.csv` is **synthetic** (fabricated `.test` indicators) so unit tests are
+> deterministic and offline — it is NOT real threat data.
+
+### Live mode (REAL data)
+`python ti_brief.py --fetch` pulls a **real live feed** from
+[abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/) (active botnet C2 IPs) and builds the brief
+from it. A real run produced:
+```
+5 IOCs | types {'ip': 5} | top [('QakBot', 4), ('Emotet', 1)]
+```
+See [`reports/daily-brief-LIVE.md`](./reports/daily-brief-LIVE.md) — genuine current threat intel,
+no fabrication.
 
 ## Screenshots
 See [`./screenshots/`](./screenshots). Add: the rendered `daily-brief.md` and the tool summary line.

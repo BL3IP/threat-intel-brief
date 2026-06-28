@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import csv
 import os
+import urllib.request
 from collections import Counter
 from typing import Dict, List
 
@@ -18,9 +19,38 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_FEED = os.path.join(HERE, "samples", "feed.csv")
 
 
+FEODO_URL = "https://feodotracker.abuse.ch/downloads/ipblocklist.csv"
+
+
 def load_feed(path: str) -> List[Dict]:
-    with open(path, newline="", encoding="utf-8") as fh:
-        return list(csv.DictReader(fh))
+    try:
+        with open(path, newline="", encoding="utf-8") as fh:
+            return list(csv.DictReader(fh))
+    except FileNotFoundError:
+        raise SystemExit(f"error: feed file not found: {path}")
+
+
+def fetch_feed(url: str = FEODO_URL, limit: int = 50) -> List[Dict]:
+    """Pull a REAL live IOC feed (abuse.ch Feodo Tracker botnet C2 IP blocklist)."""
+    req = urllib.request.Request(url, headers={"User-Agent": "ti-brief/1.0"})
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        text = resp.read().decode("utf-8", errors="ignore")
+    data_lines = [ln for ln in text.splitlines() if ln and not ln.startswith("#")]
+    rows: List[Dict] = []
+    for r in csv.DictReader(data_lines):
+        ip = (r.get("dst_ip") or "").strip()
+        if not ip:
+            continue
+        rows.append({
+            "type": "ip",
+            "value": ip,
+            "malware": (r.get("malware") or "unknown").strip(),
+            "first_seen": (r.get("first_seen_utc") or "")[:10],
+            "source": "feodo",
+        })
+        if len(rows) >= limit:
+            break
+    return rows
 
 
 def summarize(rows: List[Dict]) -> Dict:
@@ -65,11 +95,13 @@ def build_brief(rows: List[Dict], date_label: str = "latest") -> str:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="ti_brief", description="Generate a daily threat brief from an IOC feed.")
     ap.add_argument("feed", nargs="?", default=DEFAULT_FEED)
+    ap.add_argument("--fetch", action="store_true",
+                    help="pull a REAL live feed (abuse.ch Feodo Tracker) instead of the bundled sample")
     ap.add_argument("--date", default="latest")
     ap.add_argument("--out", default=os.path.join(HERE, "reports", "daily-brief.md"))
     args = ap.parse_args(argv)
 
-    rows = load_feed(args.feed)
+    rows = fetch_feed() if args.fetch else load_feed(args.feed)
     brief = build_brief(rows, args.date)
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as fh:
